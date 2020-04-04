@@ -12,21 +12,22 @@ import scala.concurrent.ExecutionContext.global
 
 object Server {
 
-  def stream[F[_]: ConcurrentEffect](implicit T: Timer[F], C: ContextShift[F]): Stream[F, Nothing] = {
+  def stream[F[_]: ConcurrentEffect](implicit T: Timer[F],
+                                     C: ContextShift[F]): Stream[F, Nothing] = {
     for {
       client <- BlazeClientBuilder[F](global).stream
-      helloWorldAlg = HelloWorld.impl[F]
       jokeAlg = Jokes.impl[F](client)
       vocabulariesAlg = Vocabularies.impl[F]
+      validationAlg = Validation.impl[F]
 
       // Combine Service Routes into an HttpApp.
       // Can also be done via a Router if you
       // want to extract a segments not checked
       // in the underlying routes.
       httpApp = (
-        Routes.helloWorldRoutes[F](helloWorldAlg) <+>
         Routes.jokeRoutes[F](jokeAlg) <+>
-        Routes.vocabulariesRoute[F](vocabulariesAlg)
+          Routes.vocabulariesRoute[F](vocabulariesAlg) <+>
+          Routes.validationRoute[F](validationAlg)
       ).orNotFound
 
       // With Middlewares in place

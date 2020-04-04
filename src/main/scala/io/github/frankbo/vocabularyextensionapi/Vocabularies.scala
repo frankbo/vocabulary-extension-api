@@ -1,33 +1,30 @@
 package io.github.frankbo.vocabularyextensionapi
 
-import cats.{Applicative}
+import cats.Applicative
 import cats.implicits._
-import io.circe.{Encoder, Json}
-import org.http4s.EntityEncoder
-import org.http4s.circe._
-import io.circe.generic.auto._
-import io.circe.syntax._
+import io.github.frankbo.vocabularyextensionapi.Models.Model._
+import io.github.frankbo.vocabularyextensionapi.Static.Static._
 
 trait Vocabularies[F[_]] {
-  def getVocabulary: F[Vocabularies.Vocabulary]
+  def getVocabulary(language: String, id: Option[Int]): F[Vocabulary]
 }
 
 object Vocabularies {
-  implicit def apply[F[_]](implicit ev: Vocabularies[F]): Vocabularies[F] = ev
 
-  final case class Vocabulary(word: String, lang: String, groupId: Int, id: Int)
-  object Vocabulary {
-    implicit val vocabularyEncoder: Encoder[Vocabulary] = new Encoder[Vocabulary] {
-      final def apply(v: Vocabulary): Json = v.asJson
-    }
+  def apply[F[_]](implicit ev: Vocabularies[F]): Vocabularies[F] = ev
 
-    implicit def vocabularyEntityEncoder[F[_]: Applicative]: EntityEncoder[F, Vocabulary] =
-      jsonEncoderOf[F, Vocabulary]
+  def impl[F[_]: Applicative]: Vocabularies[F] = new Vocabularies[F] {
+    override def getVocabulary(_language: String,
+                               id: Option[Int]): F[Vocabulary] =
+      id match {
+        case Some(v) =>
+          staticVocabularies
+            .filter(_.id == v)
+            .head
+            .pure[F] // TODO Replace with headOption
+        case None =>
+          staticVocabularies.head.pure[F] // TODO Replace with headOption
+      }
+
   }
-
-  def impl[F[_]: Applicative]: Vocabularies[F] = new Vocabularies[F]{
-    def getVocabulary: F[Vocabulary] =
-      Vocabulary("Hola", "es",1,3).pure[F]
-  }
-
 }

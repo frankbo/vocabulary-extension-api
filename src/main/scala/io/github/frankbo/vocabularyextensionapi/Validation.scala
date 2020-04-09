@@ -18,9 +18,9 @@ object Validation {
     override def getTranslation(language: String,
                                 input: String,
                                 wordId: Int): F[Translation] = {
-      val origVocabulary = staticVocabularies.filter(_.id == wordId).head
+      val origVocabulary = staticVocabularies.filter(_.id === wordId).head
       val translation = staticVocabularies
-        .filter(v => v.groupId == origVocabulary.id && v.lang == language)
+        .filter(v => v.groupId == origVocabulary.id && v.lang === language)
         .head // TODO unsafe replace with headOption
       Translation(text = translation.word,
                   correct = (input == translation.word)).pure[F]

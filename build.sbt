@@ -1,5 +1,15 @@
 import Dependencies._
 
+enablePlugins(GraalVMNativeImagePlugin)
+
+graalVMNativeImageOptions ++= Seq(
+  "--report-unsupported-elements-at-runtime",
+  "--no-fallback",
+  "--allow-incomplete-classpath",
+  "--initialize-at-build-time",
+  "--verbose"
+)
+
 lazy val root = (project in file("."))
   .settings(
     organization := "io.github.frankbo",

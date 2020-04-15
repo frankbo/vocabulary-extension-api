@@ -1,6 +1,6 @@
 package io.github.frankbo.vocabularyextensionapi
 
-import cats.effect.{ConcurrentEffect, ContextShift, IO, Timer}
+import cats.effect.{ConcurrentEffect, Timer}
 import cats.implicits._
 import fs2.Stream
 import org.http4s.client.blaze.BlazeClientBuilder
@@ -12,8 +12,7 @@ import scala.concurrent.ExecutionContext.global
 
 object Server {
 
-  def stream[F[_]: ConcurrentEffect](implicit T: Timer[F],
-                                     C: ContextShift[F]): Stream[F, Nothing] = {
+  def stream[F[_]: ConcurrentEffect](implicit T: Timer[F]): Stream[F, Nothing] = {
     for {
       client <- BlazeClientBuilder[F](global).stream
       jokeAlg = Jokes.impl[F](client)

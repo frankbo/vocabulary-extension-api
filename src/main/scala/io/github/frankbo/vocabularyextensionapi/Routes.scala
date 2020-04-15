@@ -2,9 +2,9 @@ package io.github.frankbo.vocabularyextensionapi
 
 import cats.effect.Sync
 import cats.implicits._
-import org.http4s.{HttpRoutes, QueryParamDecoder}
-import org.http4s.dsl.Http4sDsl
 import io.github.frankbo.vocabularyextensionapi.Models.Model._
+import org.http4s.HttpRoutes
+import org.http4s.dsl.Http4sDsl
 import org.http4s.dsl.impl.{
   OptionalQueryParamDecoderMatcher,
   QueryParamDecoderMatcher

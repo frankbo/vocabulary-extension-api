@@ -24,7 +24,7 @@ object Routes {
             id) =>
         for {
           vocabulary <- v.getVocabulary(language, id, vr)
-          resp <- Ok(vocabulary)
+          resp <- vocabulary.fold(NotFound())(Ok(_))
         } yield resp
     }
   }
@@ -42,7 +42,7 @@ object Routes {
             input) +& WordIdParam(wordId) =>
         for {
           translation <- v.validateTranslation(language, input, wordId, vr)
-          resp <- Ok(translation)
+          resp <- translation.fold(NotFound())(Ok(_))
         } yield resp
     }
   }

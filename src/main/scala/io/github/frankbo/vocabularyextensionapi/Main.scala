@@ -19,7 +19,7 @@ object Main extends IOApp {
         ec =>
           Transactor.fromDriverManager[F](
             "org.postgresql.Driver", // driver classname
-            "jdbc:postgresql://localhost:5432/vocabularies", // connect URL (driver-specific) TODO change to "jdbc:postgresql://localhost:5432/vocabularydb"
+            "jdbc:postgresql://localhost:5432/vocabularies", // connect URL (driver-specific)
             "postgres", // user
             "mysecretpassword", // password
             Blocker.liftExecutionContext(ec)

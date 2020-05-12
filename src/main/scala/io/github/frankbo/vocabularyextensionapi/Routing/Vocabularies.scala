@@ -2,7 +2,6 @@ package io.github.frankbo.vocabularyextensionapi.Routing
 
 import cats.Applicative
 import cats.data.OptionT
-import cats.implicits._
 import io.github.frankbo.vocabularyextensionapi.Database.VocabularyRepo
 import io.github.frankbo.vocabularyextensionapi.Models.Model._
 
@@ -27,7 +26,7 @@ object Vocabularies {
             vocabularyRepo
               .getVocabularyByIdAndLang(value, language)
           ).value
-        case None => None.pure[F].map(identity)
+        case None => Applicative[F].pure(None)
       }
 
   }

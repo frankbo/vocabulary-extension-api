@@ -5,7 +5,7 @@ import cats.implicits._
 import doobie._
 import doobie.util.transactor.Transactor
 import io.github.frankbo.vocabularyextensionapi.Database.VocabularyRepo
-import io.github.frankbo.vocabularyextensionapi.Routing.RouteCollection
+import io.github.frankbo.vocabularyextensionapi.Routing.CollectedRoutes
 import org.http4s.HttpRoutes
 import org.http4s.implicits._
 import org.http4s.server.Server
@@ -38,7 +38,7 @@ object Main extends IOApp {
     for {
       aux <- transactor()
       vocabularyRepo = VocabularyRepo.fromTransactor(aux)
-      routes = RouteCollection.httpRoutes[IO](vocabularyRepo)
+      routes = CollectedRoutes.httpRoutes[IO](vocabularyRepo)
       srv <- server[IO](routes)
     } yield srv
   }

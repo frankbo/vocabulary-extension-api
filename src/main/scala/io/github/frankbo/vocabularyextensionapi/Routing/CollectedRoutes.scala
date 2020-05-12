@@ -5,7 +5,7 @@ import io.github.frankbo.vocabularyextensionapi.Database.VocabularyRepo
 import org.http4s.HttpRoutes
 import cats.implicits._
 
-object RouteCollection {
+object CollectedRoutes {
   def httpRoutes[F[_]: ConcurrentEffect](
       vr: VocabularyRepo[F]): HttpRoutes[F] = {
     val vocabulariesAlg = Vocabularies.impl[F]

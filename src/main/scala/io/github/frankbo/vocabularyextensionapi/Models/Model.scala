@@ -6,10 +6,6 @@ import org.http4s.EntityEncoder
 import org.http4s.circe.jsonEncoderOf
 
 object Model {
-  case class DBVocabulary(id: Int,
-                          word: String,
-                          languageId: String,
-                          groupId: Int) //TODO replace with Vocabulary later on
   case class Vocabulary(word: String, lang: String, groupId: Int, id: Int)
   case class Translation(text: String, correct: Boolean)
 

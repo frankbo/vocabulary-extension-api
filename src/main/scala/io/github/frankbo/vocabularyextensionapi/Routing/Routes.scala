@@ -1,8 +1,8 @@
-package io.github.frankbo.vocabularyextensionapi
+package io.github.frankbo.vocabularyextensionapi.Routing
 
 import cats.effect.Sync
 import cats.implicits._
-import io.github.frankbo.vocabularyextensionapi.Models.Model._
+import io.github.frankbo.vocabularyextensionapi.Database.VocabularyRepo
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 import org.http4s.dsl.impl.{
@@ -11,23 +11,11 @@ import org.http4s.dsl.impl.{
 }
 
 object Routes {
-  def jokeRoutes[F[_]: Sync](J: Jokes[F]): HttpRoutes[F] = {
-    val dsl = new Http4sDsl[F] {}
-    import dsl._
-
-    HttpRoutes.of[F] {
-      case GET -> Root / "joke" =>
-        for {
-          joke <- J.get
-          resp <- Ok(joke)
-        } yield resp
-    }
-  }
-
   object OptionalIdParam extends OptionalQueryParamDecoderMatcher[Int]("id")
-  object LangParam extends QueryParamDecoderMatcher[String]("lang") // TODO Refined types
+  object LangParam extends QueryParamDecoderMatcher[String]("lang")
 
-  def vocabulariesRoute[F[_]: Sync](V: Vocabularies[F]): HttpRoutes[F] = {
+  def vocabulariesRoute[F[_]: Sync](v: Vocabularies[F],
+                                    vr: VocabularyRepo[F]): HttpRoutes[F] = {
     val dsl = Http4sDsl[F]
     import dsl._
 
@@ -35,7 +23,7 @@ object Routes {
       case GET -> Root / "vocabularies" :? LangParam(language) +& OptionalIdParam(
             id) =>
         for {
-          vocabulary <- V.getVocabulary(language, id)
+          vocabulary <- v.getVocabulary(language, id, vr)
           resp <- Ok(vocabulary)
         } yield resp
     }
@@ -44,7 +32,8 @@ object Routes {
   object InputParam extends QueryParamDecoderMatcher[String]("input")
   object WordIdParam extends QueryParamDecoderMatcher[Int]("word-id")
 
-  def validationRoute[F[_]: Sync](V: Validation[F]): HttpRoutes[F] = {
+  def validationRoute[F[_]: Sync](v: Validation[F],
+                                  vr: VocabularyRepo[F]): HttpRoutes[F] = {
     val dsl = Http4sDsl[F]
     import dsl._
 
@@ -52,7 +41,7 @@ object Routes {
       case GET -> Root / "validation" :? LangParam(language) +& InputParam(
             input) +& WordIdParam(wordId) =>
         for {
-          translation <- V.getTranslation(language, input, wordId)
+          translation <- v.validateTranslation(language, input, wordId, vr)
           resp <- Ok(translation)
         } yield resp
     }

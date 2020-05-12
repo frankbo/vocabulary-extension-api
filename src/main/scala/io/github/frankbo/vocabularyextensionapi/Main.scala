@@ -12,14 +12,18 @@ import org.http4s.server.Server
 import org.http4s.server.blaze.BlazeServerBuilder
 
 object Main extends IOApp {
-  def transactor(): Transactor[IO] = {
-    Transactor.fromDriverManager[IO](
-      "org.postgresql.Driver", // driver classname
-      "jdbc:postgresql://localhost:5432/vocabularies", // connect URL (driver-specific) TODO change to "jdbc:postgresql://localhost:5432/vocabularydb"
-      "postgres", // user
-      "mysecretpassword", // password
-      Blocker.liftExecutionContext(ExecutionContexts.synchronous)
-    )
+  def transactor(): Resource[IO, Transactor[IO]] = {
+    ExecutionContexts
+      .cachedThreadPool[IO]
+      .map(
+        ec =>
+          Transactor.fromDriverManager[IO](
+            "org.postgresql.Driver", // driver classname
+            "jdbc:postgresql://localhost:5432/vocabularies", // connect URL (driver-specific) TODO change to "jdbc:postgresql://localhost:5432/vocabularydb"
+            "postgres", // user
+            "mysecretpassword", // password
+            Blocker.liftExecutionContext(ec)
+        ))
   }
 
   def server[F[_]: ConcurrentEffect: ContextShift: Timer](
@@ -31,11 +35,10 @@ object Main extends IOApp {
       .resource
 
   def resource: Resource[IO, Server[IO]] = {
-    val aux: Transactor[IO] = transactor()
-    val vocabularyRepo: VocabularyRepo[IO] = VocabularyRepo.fromTransactor(aux)
-    val routes: HttpRoutes[IO] = RouteCollection.httpRoutes[IO](vocabularyRepo)
     for {
-      //TODO pass execution context
+      aux <- transactor()
+      vocabularyRepo = VocabularyRepo.fromTransactor(aux)
+      routes = RouteCollection.httpRoutes[IO](vocabularyRepo)
       srv <- server[IO](routes)
     } yield srv
   }

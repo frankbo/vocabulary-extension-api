@@ -6,7 +6,10 @@ import org.http4s.EntityEncoder
 import org.http4s.circe.jsonEncoderOf
 
 object Model {
-  case class Vocabulary(word: String, lang: String, groupId: Int, id: Int)
+  case class Vocabulary(word: String,
+                        lang: String,
+                        groupId: Int,
+                        languageId: Int)
   case class Translation(text: String, correct: Boolean)
 
   // Encoding
@@ -16,7 +19,7 @@ object Model {
 
   implicit val vocabularyEncoder: Encoder[Vocabulary] =
     Encoder.forProduct4("word", "lang", "groupId", "id")(v =>
-      (v.word, v.lang, v.groupId, v.id))
+      (v.word, v.lang, v.groupId, v.languageId))
 
   implicit def translationEntityEncoder[F[_]: Applicative]
     : EntityEncoder[F, Translation] =

@@ -15,7 +15,7 @@ object VocabularyRepo {
       def searchByIdAndLang(id: Int,
                             language: String): doobie.Query0[Vocabulary] = {
         sql"""
-             |SELECT word, language.language_short, group_id, vocabulary_id
+             |SELECT word, language.language_short, group_id, vocabulary.language_id
              |FROM vocabulary
              |INNER JOIN language ON language.language_id = vocabulary.group_id
              |WHERE vocabulary.language_id = $id

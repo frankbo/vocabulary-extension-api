@@ -1,6 +1,8 @@
+-- Create Database
+DROP DATABASE IF EXISTS vocabularies;
+CREATE DATABASE IF NOT EXISTS vocabularies;
+
 -- Table Creation
-
-
 CREATE TABLE IF NOT EXISTS language
 (
  language_id    serial NOT NULL,
@@ -35,8 +37,8 @@ INSERT INTO language (language_short, language_long) VALUES ('es', 'Spanish');
 -- Inserting Vocabularies
 
 INSERT INTO vocabulary (language_id, group_id, word) VALUES (1, 1, 'Der Zug');
-INSERT INTO vocabulary (language_id, group_id, word) VALUES (1, 2, 'El Tren');
-INSERT INTO vocabulary (language_id, group_id, word) VALUES (2, 1, 'Das Flugzeug');
+INSERT INTO vocabulary (language_id, group_id, word) VALUES (2, 1, 'El Tren');
+INSERT INTO vocabulary (language_id, group_id, word) VALUES (1, 2, 'Das Flugzeug');
 INSERT INTO vocabulary (language_id, group_id, word) VALUES (2, 2, 'El Avión');
 INSERT INTO vocabulary (language_id, group_id, word) VALUES (1, 3, 'Das Auto');
 INSERT INTO vocabulary (language_id, group_id, word) VALUES (2, 3, 'El Carro');
